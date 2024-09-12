@@ -16,7 +16,7 @@ This project is a Flutter application that [provide a brief description of the a
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/username/repo.git
+   git clone https://github.com/abdulrahmanRadan/toby-flutter.git
    ```
 
 2. **Navigate to the project directory:**

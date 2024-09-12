@@ -22,7 +22,7 @@ This project is a Flutter application that [provide a brief description of the a
 2. **Navigate to the project directory:**
 
    ```bash
-   cd repo
+   cd toby-flutter
    ```
 
 3. **Install dependencies:**

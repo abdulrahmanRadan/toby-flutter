@@ -51,7 +51,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (response['success']) {
           emit(Authenticated());
         } else {
-          emit(AuthError('Login failed sdka'));
+          emit(const AuthError('Login failed'));
         }
       } catch (e) {
         emit(AuthError(e.toString()));
@@ -63,3 +63,4 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
   }
 }
+

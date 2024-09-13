@@ -1,12 +1,16 @@
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   final Dio _dio = Dio(BaseOptions(
     baseUrl: 'http://127.0.0.1:8000/api',
-    connectTimeout: const Duration(seconds: 10), // تحديد مهلة الاتصال بـ 10 ثوانٍ
-    receiveTimeout: const Duration(seconds: 10), // تحديد مهلة الاستقبال بـ 10 ثوانٍ
+    connectTimeout: const Duration(seconds: 10),
+    receiveTimeout: const Duration(seconds: 10),
   ));
 
+  final String? userId; // اجعل معرف المستخدم قابلاً لأن يكون null
+
+  ApiService(this.userId);
 
   // Method for user login
   Future<dynamic> login(String email, String password) async {
@@ -16,23 +20,23 @@ class ApiService {
         'password': password,
       });
 
-      // Check if the response is successful
       if (response.statusCode == 200) {
-        return response.data;
+        final data = response.data;
+        final token = data['access_token'];
+        final userId = data['id'].toString(); // Assuming user ID is nested in response
+
+        // await saveUserData(userId, token);
+        return data;
       } else {
-        // Handle different error status codes
         throw Exception('Failed to login: ${response.statusCode} - ${response.data['message'] ?? 'Unknown error'}');
       }
     } on DioException catch (dioError) {
-      // Handle Dio errors (like network issues, 404, 500, etc.)
       if (dioError.response != null) {
         throw Exception('Dio error: ${dioError.response?.statusCode} - ${dioError.response?.data['message'] ?? dioError.message}');
       } else {
-        // Handle non-response errors (like network timeout, DNS error)
         throw Exception('Network error: ${dioError.message}');
       }
     } catch (e) {
-      // Handle any other unexpected errors
       throw Exception('Unexpected error: $e');
     }
   }
@@ -46,32 +50,50 @@ class ApiService {
         'password': password,
       });
 
-      // Check if the response is successful
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return response.data;
+        final data = response.data;
+        final token = data['access_token'];
+        final userId = data['id'].toString(); // Assuming user ID is nested in response
+
+        // await saveUserData(userId, token);
+        return data;
       } else {
-        // Handle different error status codes
         throw Exception('Failed to register: ${response.statusCode} - ${response.data['message'] ?? 'Unknown error'}');
       }
     } on DioException catch (dioError) {
-      // Handle Dio errors (like network issues, 404, 500, etc.)
       if (dioError.response != null) {
         throw Exception('Dio error: ${dioError.response?.statusCode} - ${dioError.response?.data['message'] ?? dioError.message}');
       } else {
-        // Handle non-response errors (like network timeout, DNS error)
         throw Exception('Network error: ${dioError.message}');
       }
     } catch (e) {
-      // Handle any other unexpected errors
       throw Exception('Unexpected error: $e');
     }
   }
 
+  // Save user data to SharedPreferences
+  Future<void> saveUserData(String userId, String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userId', userId);
+    await prefs.setString('token', token);
+  }
 
-  // طريقة لجلب المجموعات
+  // Retrieve user ID dynamically
+  Future<String?> getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('userId');
+  }
+
+  // Retrieve token dynamically
+  Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
+  }
+
   Future<List<dynamic>> getCollections() async {
     try {
-      final response = await _dio.get('/collections');
+      final userId = await getUserId();
+      final response = await _dio.get('/collections/$userId');
       return response.data['data'];
     } catch (e) {
       throw Exception('Failed to fetch collections');
@@ -79,14 +101,16 @@ class ApiService {
   }
 
   // طريقة لإنشاء مجموعة جديدة
-  Future<void> createCollection(String title, String? description) async {
+  Future<void> createCollection(String title, String? description, {bool isFav = false, int? tagId}) async {
     try {
       await _dio.post('/collections', data: {
         'title': title,
         'description': description,
+        'is_fav': isFav,
+        'tagId': tagId,
       });
     } catch (e) {
-      throw Exception('Failed to create collection');
+      throw Exception('Failed to create collection $e');
     }
   }
 

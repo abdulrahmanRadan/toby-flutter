@@ -58,7 +58,7 @@ class CollectionBloc extends Bloc<CollectionEvent, CollectionState> {
         final collections = await collectionRepository.getCollections();
         emit(CollectionLoaded(collections));
       } catch (e) {
-        emit(const CollectionError('Failed to load collections.'));
+        emit(CollectionError('Failed to load collections: ${e.toString()}'));
       }
     });
 
@@ -68,7 +68,7 @@ class CollectionBloc extends Bloc<CollectionEvent, CollectionState> {
         await collectionRepository.createCollection(event.title, event.description);
         add(LoadCollections()); // Reload collections after creation
       } catch (e) {
-        emit(const CollectionError('Failed to create collection.'));
+        emit( CollectionError('Failed to create collection: ${e.toString()}'));
       }
     });
   }

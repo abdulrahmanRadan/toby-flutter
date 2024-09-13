@@ -3,21 +3,40 @@ import 'package:dio/dio.dart';
 class ApiService {
   final Dio _dio = Dio(BaseOptions(
     baseUrl: 'http://127.0.0.1:8000/api',
+    connectTimeout: const Duration(seconds: 10), // تحديد مهلة الاتصال بـ 10 ثوانٍ
+    receiveTimeout: const Duration(seconds: 10), // تحديد مهلة الاستقبال بـ 10 ثوانٍ
   ));
 
 
-  // طريقة لتسجيل الدخول
+  // Method for user login
   Future<dynamic> login(String email, String password) async {
     try {
       final response = await _dio.post('/login', data: {
         'email': email,
         'password': password,
       });
-      return response.data;
+
+      // Check if the response is successful
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        // Handle different error status codes
+        throw Exception('Failed to login: ${response.statusCode} - ${response.data['message'] ?? 'Unknown error'}');
+      }
+    } on DioException catch (dioError) {
+      // Handle Dio errors (like network issues, 404, 500, etc.)
+      if (dioError.response != null) {
+        throw Exception('Dio error: ${dioError.response?.statusCode} - ${dioError.response?.data['message'] ?? dioError.message}');
+      } else {
+        // Handle non-response errors (like network timeout, DNS error)
+        throw Exception('Network error: ${dioError.message}');
+      }
     } catch (e) {
-      throw Exception(e.toString());
+      // Handle any other unexpected errors
+      throw Exception('Unexpected error: $e');
     }
   }
+
   // Method for user registration
   Future<dynamic> register(String name, String email, String password) async {
     try {
@@ -26,11 +45,28 @@ class ApiService {
         'email': email,
         'password': password,
       });
-      return response.data;
+
+      // Check if the response is successful
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return response.data;
+      } else {
+        // Handle different error status codes
+        throw Exception('Failed to register: ${response.statusCode} - ${response.data['message'] ?? 'Unknown error'}');
+      }
+    } on DioException catch (dioError) {
+      // Handle Dio errors (like network issues, 404, 500, etc.)
+      if (dioError.response != null) {
+        throw Exception('Dio error: ${dioError.response?.statusCode} - ${dioError.response?.data['message'] ?? dioError.message}');
+      } else {
+        // Handle non-response errors (like network timeout, DNS error)
+        throw Exception('Network error: ${dioError.message}');
+      }
     } catch (e) {
-      throw Exception(e.toString());
+      // Handle any other unexpected errors
+      throw Exception('Unexpected error: $e');
     }
   }
+
 
   // طريقة لجلب المجموعات
   Future<List<dynamic>> getCollections() async {

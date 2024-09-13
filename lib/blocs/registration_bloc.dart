@@ -49,7 +49,7 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
         if (response['success']) {
           emit(RegistrationSuccess());
         } else {
-          emit(RegistrationError('Registration sddsfsdf failed'));
+          emit(const RegistrationError('Registration  failed'));
         }
       } catch (e) {
         emit(RegistrationError(e.toString()));

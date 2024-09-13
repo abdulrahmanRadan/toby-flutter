@@ -23,7 +23,7 @@ class RegistrationScreen extends StatelessWidget {
               ScaffoldMessenger.of(context)
                   .showSnackBar(SnackBar(content: Text(state.message)));
             } else if (state is RegistrationSuccess) {
-              Navigator.pushReplacementNamed(context, '/');
+              Navigator.pushReplacementNamed(context, '/home');
             }
           },
           child: Column(

@@ -43,7 +43,6 @@ class LoadCollections extends CollectionEvent {}
 class CreateCollection extends CollectionEvent {
   final String title;
   final String? description;
-
   const CreateCollection(this.title, this.description);
 }
 

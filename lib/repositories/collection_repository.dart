@@ -24,7 +24,9 @@ class CollectionRepository {
 
   Future<void> createCollection(String title, String? description, {bool isFav = true, int? tagId}) async {
     try {
-      await apiService.createCollection(title, description, isFav: isFav, tagId: tagId);
+      final response =  await apiService.createCollection(title, description, isFav: isFav, tagId: tagId);
+      return response;
+
     } catch (e) {
       throw Exception('failed to create collection $e');
     }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -58,18 +60,18 @@ class ApiService {
         'password': password,
       });
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response.statusCode == HttpStatus.created ||
+          response.statusCode == HttpStatus.ok) {
         final data = response.data;
         final token =
             data['data']['access_token']?.toString(); // Add null check here
-        final userId = data['data']['id']
-            ?.toString(); // Assuming user ID is nested in response
+        final email = data['data']['email']?.toString();
 
-        if (token != null && userId != null) {
-          await saveUserData(userId, token);
+        if (token != null && email != null) {
+          await saveUserData(email, token);
         } else {
           throw Exception(
-              'Login response is missing userId or token: ${data['data']['id']} : $token');
+              'Login response is missing userId or token: ${data['data']['email']} : $token');
         }
         return data;
       } else {

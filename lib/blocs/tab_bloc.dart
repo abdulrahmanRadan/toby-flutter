@@ -80,7 +80,8 @@ class TabBloc extends Bloc<TabEvent, TabState> {
       emit(TabLoading());
       try {
         await tabRepository.createTab(event.title, event.url, event.collectionId);
-        add(LoadTabs(event.collectionId)); // Reload tabs after creation
+        // إعادة تحميل التبويبات بعد الإضافة
+        add(LoadTabs(event.collectionId));
       } catch (e) {
         emit(const TabError('Failed to create tab.'));
       }
@@ -95,5 +96,15 @@ class TabBloc extends Bloc<TabEvent, TabState> {
         emit(const TabError('Failed to delete tab.'));
       }
     });
+    // on<DeleteTab>((event, emit) async {
+    //   emit(TabLoading());
+    //   try {
+    //     await tabRepository.deleteTab(event.tabId);
+    //     // إعادة تحميل التبويبات بعد الحذف
+    //     add(LoadTabs(collectionId)); // تأكد من أن collectionId متاح هنا
+    //   } catch (e) {
+    //     emit(const TabError('Failed to delete tab.'));
+    //   }
+    // });
   }
 }

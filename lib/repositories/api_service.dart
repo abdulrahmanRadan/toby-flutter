@@ -22,8 +22,8 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = response.data;
-        final token = data['data']['access_token']?.toString(); // Add null check here
-        final userId = data['data']['id']?.toString(); // Add null check here
+        final token = data['access_token']?.toString(); // Add null check here
+        final userId = data['user_id']?.toString(); // Add null check here
 
         if (token != null && userId != null) {
           await saveUserData(userId, token);
@@ -56,13 +56,13 @@ class ApiService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = response.data;
-        final token = data['data']['access_token']?.toString(); // Add null check here
-        final userId = data['data']['id']?.toString(); // Assuming user ID is nested in response
+        final token = data['access_token']?.toString(); // Add null check here
+        final userId = data['id']?.toString(); // Assuming user ID is nested in response
 
         if (token != null && userId != null) {
           await saveUserData(userId, token);
         } else {
-          throw Exception('Login response is missing userId or token: ${data['data']['id']} : $token');
+          throw Exception('Login response is missing userId or token: ${data['id']} : $token');
         }
         return data;
       } else {
@@ -100,24 +100,34 @@ class ApiService {
 
   Future<List<dynamic>> getCollections() async {
     try {
-      // final userId = await getUserId();
-      final response = await _dio.get('/collections',data:{'id' :userId});
+      // استخدام queryParameters بدلاً من data لإرسال معرف المستخدم
+      final response = await _dio.get('/collections', queryParameters: {'id': userId});
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response.statusCode == 200) {
         final data = response.data;
+        // print(data);
         return data['data'];
-
       } else {
-        throw Exception('Failed to getCollections: ${response.statusCode} - ${response.data['message'] ?? 'Unknown error'}');
+        throw Exception('Failed to get collections: ${response.statusCode} - ${response.data['message'] ?? 'Unknown error'}');
       }
     } catch (e) {
-      throw Exception('Failed to fetch collections');
+      throw Exception('Failed to fetch collections: $e');
     }
   }
+
 
   // طريقة لإنشاء مجموعة جديدة
   Future<void> createCollection(String title, String? description, {bool isFav = true, int? tagId}) async {
     try {
+      Future<String?> getUserId() async {
+        final prefs = await SharedPreferences.getInstance();
+        final userId = prefs.getString('userId');
+        if (userId == null) {
+          // Handle the case where userId is null, e.g., navigate to login or return a default value
+          return null;
+        }
+        return userId;
+      }
       final response =  await _dio.post('/collections', data: {
         'title': title,
         'description': description,
@@ -149,7 +159,7 @@ class ApiService {
       });
       return response.data['data'];
     } catch (e) {
-      throw Exception('Failed to fetch tabs');
+      throw Exception('Failed 1 to fetch tabs');
     }
   }
 

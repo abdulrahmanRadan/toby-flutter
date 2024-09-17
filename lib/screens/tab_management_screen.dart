@@ -40,6 +40,27 @@ class TabManagementScreen extends StatelessWidget {
           return const Center(child: Text('No tabs available'));
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.pushNamed(
+            context,
+            '/createTab',
+            arguments: collectionId,
+          );
+
+          if (result == true) {
+            // عرض رسالة نجاح
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Tab created successfully')),
+            );
+
+            // إعادة تحميل التبويبات لتحديث القائمة
+            context.read<TabBloc>().add(LoadTabs(collectionId));
+          }
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
+

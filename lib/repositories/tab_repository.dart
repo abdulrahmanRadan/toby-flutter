@@ -11,9 +11,14 @@ class TabRepository {
     try {
       final response = await apiService.getTabs(collectionId);
       // تحويل البيانات إلى قائمة من AppTab
+      if (response.isEmpty) {
+
+        // Throw an exception or handle empty data scenario
+        throw Exception('No tabs available for the specified collection.');
+      }
       return response.map<AppTab>((json) => AppTab.fromJson(json)).toList();
     } catch (e) {
-      throw Exception('Failed to fetch tabs');
+      throw Exception('Failed to fetch tabs sdsd');
     }
   }
 

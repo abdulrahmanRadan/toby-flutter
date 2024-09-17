@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/widgets.dart';
 
 import '../models/collection_model.dart';
 import '../repositories/api_service.dart';
@@ -16,22 +15,20 @@ class CollectionRepository {
           .map<Collection>((json) => Collection.fromJson(json))
           .toList();
     } catch (e) {
-      print("\n\n response: $e \n\n");
-
       if (e is DioException) {
         throw Exception('No internet connection');
       } else {
         if (e.toString().contains('401')) {
-          // Handle unauthorized (invalid/expired token)
+          // TODO: go to login page
+          throw Exception('Invalid credentials. Please try again.');
         } else if (e.toString().contains('500')) {
-          // Handle server errors
-          print('Server error. Please try again later.');
+          throw Exception('Server error. Please try again later.');
         } else {
-          // Handle other errors
-          print('Error: $e');
+          throw Exception('Error: $e');
         }
-        throw Exception('Failed to fetch collections');
       }
+      // Add a return statement here
+      return [];
     }
   }
 

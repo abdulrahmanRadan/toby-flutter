@@ -49,10 +49,13 @@ class _CreateTabScreenState extends State<CreateTabScreen> {
 
                 if (title.isNotEmpty) {
                   // استخدام Bloc لإضافة تبويب جديد
-                  context.read<TabBloc>().add(CreateTab(title, url, widget.collectionId));
+                  context
+                      .read<TabBloc>()
+                      .add(CreateTab(title, url, widget.collectionId));
 
                   // العودة مع تمرير قيمة تدل على نجاح العملية
-                  Navigator.pop(context, true); // true تشير إلى أن العملية تمت بنجاح
+                  Navigator.pop(
+                      context, true); // true تشير إلى أن العملية تمت بنجاح
                 } else {
                   // عرض رسالة إذا كان العنوان فارغًا
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -62,7 +65,6 @@ class _CreateTabScreenState extends State<CreateTabScreen> {
               },
               child: const Text('Create Tab'),
             ),
-
           ],
         ),
       ),

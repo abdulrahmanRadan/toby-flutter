@@ -18,8 +18,7 @@ import 'package:toby1/screens/user_profile_screen.dart';
 import 'package:toby1/blocs/auth_bloc.dart';
 import 'package:toby1/models/collection_model.dart';
 import 'package:toby1/blocs/tab_bloc.dart'; // Import TabBloc here
-import 'package:toby1/screens/createTabScreen.dart';
-
+import 'package:toby1/screens/CreateTabScreen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -64,15 +63,25 @@ class MyApp extends StatelessWidget {
         return MultiRepositoryProvider(
           providers: [
             RepositoryProvider(create: (context) => ApiService(userId)),
-            RepositoryProvider(create: (context) => CollectionRepository(context.read<ApiService>())),
-            RepositoryProvider(create: (context) => TabRepository(context.read<ApiService>())),
+            RepositoryProvider(
+                create: (context) =>
+                    CollectionRepository(context.read<ApiService>())),
+            RepositoryProvider(
+                create: (context) => TabRepository(context.read<ApiService>())),
           ],
           child: MultiBlocProvider(
             providers: [
-              BlocProvider(create: (context) => AuthBloc(context.read<ApiService>())),
-              BlocProvider(create: (context) => RegistrationBloc(context.read<ApiService>())),
-              BlocProvider(create: (context) => CollectionBloc(context.read<CollectionRepository>())),
-              BlocProvider(create: (context) => TabBloc(context.read<TabRepository>())), // Provide TabBloc here
+              BlocProvider(
+                  create: (context) => AuthBloc(context.read<ApiService>())),
+              BlocProvider(
+                  create: (context) =>
+                      RegistrationBloc(context.read<ApiService>())),
+              BlocProvider(
+                  create: (context) =>
+                      CollectionBloc(context.read<CollectionRepository>())),
+              BlocProvider(
+                  create: (context) => TabBloc(
+                      context.read<TabRepository>())), // Provide TabBloc here
             ],
             child: MaterialApp(
               title: 'Toby App',
@@ -82,23 +91,28 @@ class MyApp extends StatelessWidget {
                 '/home': (context) => HomeScreen(),
                 '/createCollection': (context) => CreateCollectionScreen(),
                 '/collectionDetails': (context) {
-                  final collection = ModalRoute.of(context)?.settings.arguments as Collection?;
+                  final collection =
+                      ModalRoute.of(context)?.settings.arguments as Collection?;
                   if (collection == null) {
-                    return const Scaffold(body: Center(child: Text('No collection provided')));
+                    return const Scaffold(
+                        body: Center(child: Text('No collection provided')));
                   }
                   return CollectionDetailsScreen(collection: collection);
                 },
                 '/createTab': (context) {
-                  final collectionId = ModalRoute.of(context)?.settings.arguments as int?;
+                  final collectionId =
+                      ModalRoute.of(context)?.settings.arguments as int?;
                   if (collectionId == null) {
-                    return const Scaffold(body: Center(child: Text('No collection ID provided')));
+                    return const Scaffold(
+                        body: Center(child: Text('No collection ID provided')));
                   }
                   return CreateTabScreen(collectionId: collectionId);
                 },
                 '/manageTags': (context) => const TagManagementScreen(),
                 '/profile': (context) => UserProfileScreen(),
                 '/register': (context) => RegistrationScreen(),
-                '/settings': (context) => const SettingsScreen(), // Add this route
+                '/settings': (context) =>
+                    const SettingsScreen(), // Add this route
               },
             ),
           ),

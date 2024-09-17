@@ -11,22 +11,33 @@ class CollectionRepository {
   Future<List<Collection>> getCollections() async {
     try {
       final response = await apiService.getCollections();
-      return response.map<Collection>((json) => Collection.fromJson(json)).toList();
+      return response
+          .map<Collection>((json) => Collection.fromJson(json))
+          .toList();
     } catch (e) {
-      if (e is DioException ) {
+      if (e is DioException) {
         throw Exception('No internet connection');
       } else {
-        throw Exception('Failed to fetch collections');
+        if (e.toString().contains('401')) {
+          // TODO: go to login page
+          throw Exception('Invalid credentials. Please try again.');
+        } else if (e.toString().contains('500')) {
+          throw Exception('Server error. Please try again later.');
+        } else {
+          throw Exception('Error: $e');
+        }
       }
+      // Add a return statement here
+      return [];
     }
   }
 
-
-  Future<void> createCollection(String title, String? description, {bool isFav = true, int? tagId}) async {
+  Future<void> createCollection(String title, String? description,
+      {bool isFav = true, int? tagId}) async {
     try {
-      final response =  await apiService.createCollection(title, description, isFav: isFav, tagId: tagId);
+      final response = await apiService.createCollection(title, description,
+          isFav: isFav, tagId: tagId);
       return response;
-
     } catch (e) {
       throw Exception('failed to create collection $e');
     }

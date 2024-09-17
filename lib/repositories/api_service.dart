@@ -123,7 +123,7 @@ class ApiService {
       final response = await _dio.get(
         '/collections',
         options: Options(
-          headers: {'Authorization': 'Bearer$token'},
+          headers: {'Authorization': 'Bearer $token'},
         ),
       );
 

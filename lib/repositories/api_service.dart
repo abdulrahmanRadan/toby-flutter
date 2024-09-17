@@ -63,10 +63,11 @@ class ApiService {
       if (response.statusCode == HttpStatus.created ||
           response.statusCode == HttpStatus.ok) {
         final data = response.data;
+
         final token =
             data['data']['access_token']?.toString(); // Add null check here
         final email = data['data']['email']?.toString();
-
+        final userId = data['data']['id']?.toString(); // Assuming user ID is nested in response
         if (token != null && email != null) {
           await saveUserData(email, token);
         } else {
@@ -111,26 +112,38 @@ class ApiService {
 
   Future<List<dynamic>> getCollections() async {
     try {
-      // final userId = await getUserId();
-      final response = await _dio.get('/collections', data: {'id': userId});
+      // استخدام queryParameters بدلاً من data لإرسال معرف المستخدم
+      final response = await _dio.get('/collections', queryParameters: {'id': userId});
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response.statusCode == 200) {
         final data = response.data;
+        // print(data);
         return data['data'];
       } else {
         throw Exception(
             'Failed to getCollections: ${response.statusCode} - ${response.data['message'] ?? 'Unknown error'}');
       }
     } catch (e) {
-      throw Exception('Failed to fetch collections');
+      throw Exception('Failed to fetch collections: $e');
     }
   }
+
 
   // طريقة لإنشاء مجموعة جديدة
   Future<void> createCollection(String title, String? description,
       {bool isFav = true, int? tagId}) async {
     try {
-      final response = await _dio.post('/collections', data: {
+
+      Future<String?> getUserId() async {
+        final prefs = await SharedPreferences.getInstance();
+        final userId = prefs.getString('userId');
+        if (userId == null) {
+          // Handle the case where userId is null, e.g., navigate to login or return a default value
+          return null;
+        }
+        return userId;
+      }
+      final response =  await _dio.post('/collections', data: {
         'title': title,
         'description': description,
         'is_fav': isFav,
@@ -161,7 +174,7 @@ class ApiService {
       });
       return response.data['data'];
     } catch (e) {
-      throw Exception('Failed to fetch tabs');
+      throw Exception('Failed 1 to fetch tabs');
     }
   }
 

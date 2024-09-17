@@ -34,7 +34,6 @@ class CollectionError extends CollectionState {
 // Define Collection Events
 abstract class CollectionEvent extends Equatable {
   const CollectionEvent();
-
   @override
   List<Object?> get props => [];
 }

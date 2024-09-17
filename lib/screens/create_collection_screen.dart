@@ -18,7 +18,7 @@ class CreateCollectionScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: BlocConsumer<CollectionBloc, CollectionState>(
           listener: (context, state) {
-            if (state is CreateCollection) {
+            if (state is CollectionLoaded) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Collection created successfully')),
               );
@@ -59,5 +59,4 @@ class CreateCollectionScreen extends StatelessWidget {
       ),
     );
   }
-
 }

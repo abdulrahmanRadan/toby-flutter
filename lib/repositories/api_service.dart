@@ -22,6 +22,7 @@ class ApiService {
         'password': password,
       });
 
+      print("token: ");
       if (response.statusCode == 200) {
         final data = response.data;
         final token = data['data']['access_token']?.toString();
@@ -67,7 +68,7 @@ class ApiService {
         final token =
             data['data']['access_token']?.toString(); // Add null check here
         final email = data['data']['email']?.toString();
-        final userId = data['data']['id']?.toString(); // Assuming user ID is nested in response
+
         if (token != null && email != null) {
           await saveUserData(email, token);
         } else {
@@ -112,14 +113,30 @@ class ApiService {
 
   Future<List<dynamic>> getCollections() async {
     try {
-      // استخدام queryParameters بدلاً من data لإرسال معرف المستخدم
-      final response = await _dio.get('/collections', queryParameters: {'id': userId});
+      final token = await getToken();
 
+      if (token == null || token.isEmpty) {
+        throw Exception('User is not authenticated. Please log in.');
+      }
+
+      // Proceed with the request if authenticated
+      final response = await _dio.get(
+        '/collections',
+        options: Options(
+          headers: {'Authorization': 'Bearer$token'},
+        ),
+      );
+
+      // Check for success response
       if (response.statusCode == 200) {
         final data = response.data;
-        // print(data);
         return data['data'];
+      } else if (response.statusCode == 401) {
+        // Handle unauthorized access (invalid or expired token)
+        throw Exception(
+            'Unauthorized: Invalid or expired token. Please log in again.');
       } else {
+        // Handle other types of errors with status code and message
         throw Exception(
             'Failed to getCollections: ${response.statusCode} - ${response.data['message'] ?? 'Unknown error'}');
       }
@@ -128,12 +145,10 @@ class ApiService {
     }
   }
 
-
   // طريقة لإنشاء مجموعة جديدة
   Future<void> createCollection(String title, String? description,
       {bool isFav = true, int? tagId}) async {
     try {
-
       Future<String?> getUserId() async {
         final prefs = await SharedPreferences.getInstance();
         final userId = prefs.getString('userId');
@@ -143,7 +158,8 @@ class ApiService {
         }
         return userId;
       }
-      final response =  await _dio.post('/collections', data: {
+
+      final response = await _dio.post('/collections', data: {
         'title': title,
         'description': description,
         'is_fav': isFav,

@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// TODO: check all requests's body for any mistakes
+// TODO: Create a API call for getById to all the other methods
+
 class ApiService {
   final Dio _dio = Dio(BaseOptions(
     baseUrl: 'http://127.0.0.1:8000/api',
@@ -288,6 +291,70 @@ class ApiService {
           ));
     } catch (e) {
       throw Exception('Failed to delete tag');
+    }
+  }
+
+  // Update a tag
+  Future<void> updateTag(int tagId, String newTitle) async {
+    try {
+      final token = await getToken();
+
+      if (token == null || token.isEmpty) {
+        throw Exception('User is not authenticated. Please log in.');
+      }
+
+      await _dio.put(
+        '/tags/$tagId',
+        data: {
+          'title': newTitle,
+        },
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+    } catch (e) {
+      throw Exception('Failed to update tag');
+    }
+  }
+
+  // Add a tag to a collection
+  Future<void> addTagToCollection(int collectionId, int tagId) async {
+    try {
+      final token = await getToken();
+
+      if (token == null || token.isEmpty) {
+        throw Exception('User is not authenticated. Please log in.');
+      }
+
+      await _dio.post(
+        '/collections/$collectionId/tags',
+        data: {'tag_id': tagId},
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+    } catch (e) {
+      throw Exception('Failed to add tag to collection');
+    }
+  }
+
+  // Remove a tag from a collection
+  Future<void> removeTagFromCollection(int collectionId, int tagId) async {
+    try {
+      final token = await getToken();
+
+      if (token == null || token.isEmpty) {
+        throw Exception('User is not authenticated. Please log in.');
+      }
+
+      await _dio.delete(
+        '/collections/$collectionId/tags/$tagId',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+    } catch (e) {
+      throw Exception('Failed to remove tag from collection');
     }
   }
 }

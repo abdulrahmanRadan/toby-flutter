@@ -6,11 +6,10 @@ class TagRepository {
 
   TagRepository(this.apiService);
 
-  // يجب أن ترجع قائمة من الكائنات Tag
+  // Fetch all tags
   Future<List<Tag>> getTags() async {
     try {
       final response = await apiService.getTags();
-      // تحويل البيانات إلى قائمة من الكائنات Tag
       return response.map<Tag>((json) => Tag.fromJson(json)).toList();
     } catch (e) {
       throw Exception('Failed to fetch tags');
@@ -25,11 +24,39 @@ class TagRepository {
     }
   }
 
+  // Delete a tag
   Future<void> deleteTag(int tagId) async {
     try {
       await apiService.deleteTag(tagId);
     } catch (e) {
       throw Exception('Failed to delete tag');
+    }
+  }
+
+  // Update a tag
+  Future<void> updateTag(int tagId, String newTitle) async {
+    try {
+      await apiService.updateTag(tagId, newTitle);
+    } catch (e) {
+      throw Exception('Failed to update tag');
+    }
+  }
+
+  // Add a tag to a collection
+  Future<void> addTagToCollection(int collectionId, int tagId) async {
+    try {
+      await apiService.addTagToCollection(collectionId, tagId);
+    } catch (e) {
+      throw Exception('Failed to add tag to collection');
+    }
+  }
+
+  // Remove a tag from a collection
+  Future<void> removeTagFromCollection(int collectionId, int tagId) async {
+    try {
+      await apiService.removeTagFromCollection(collectionId, tagId);
+    } catch (e) {
+      throw Exception('Failed to remove tag from collection');
     }
   }
 }

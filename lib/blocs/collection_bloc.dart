@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:toby1/models/collection_model.dart';
 import 'package:toby1/repositories/collection_repository.dart';
 
-
 // Define Collection States
 abstract class CollectionState extends Equatable {
   const CollectionState();
@@ -13,7 +12,9 @@ abstract class CollectionState extends Equatable {
 }
 
 class CollectionInitial extends CollectionState {}
+
 class CollectionLoading extends CollectionState {}
+
 class CollectionLoaded extends CollectionState {
   final List<Collection> collections;
 
@@ -22,6 +23,7 @@ class CollectionLoaded extends CollectionState {
   @override
   List<Object?> get props => [collections];
 }
+
 class CollectionError extends CollectionState {
   final String message;
 
@@ -39,6 +41,7 @@ abstract class CollectionEvent extends Equatable {
 }
 
 class LoadCollections extends CollectionEvent {}
+
 class CreateCollection extends CollectionEvent {
   final String title;
   final String? description;
@@ -56,6 +59,7 @@ class CollectionBloc extends Bloc<CollectionEvent, CollectionState> {
         final collections = await collectionRepository.getCollections();
         emit(CollectionLoaded(collections));
       } catch (e) {
+        print(e.toString());
         emit(CollectionError('Failed to load collections: ${e.toString()}'));
       }
     });
@@ -63,10 +67,11 @@ class CollectionBloc extends Bloc<CollectionEvent, CollectionState> {
     on<CreateCollection>((event, emit) async {
       emit(CollectionLoading());
       try {
-        await collectionRepository.createCollection(event.title, event.description);
+        await collectionRepository.createCollection(
+            event.title, event.description);
         add(LoadCollections()); // Reload collections after creation
       } catch (e) {
-        emit( CollectionError('Failed to create collection: ${e.toString()}'));
+        emit(CollectionError('Failed to create collection: ${e.toString()}'));
       }
     });
   }

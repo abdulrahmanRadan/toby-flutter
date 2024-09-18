@@ -22,6 +22,7 @@ class ApiService {
         'password': password,
       });
 
+      print("token: ");
       if (response.statusCode == 200) {
         final data = response.data;
         final token = data['data']['access_token']?.toString();
@@ -67,7 +68,7 @@ class ApiService {
         final token =
             data['data']['access_token']?.toString(); // Add null check here
         final email = data['data']['email']?.toString();
-        final userId = data['data']['id']?.toString(); // Assuming user ID is nested in response
+
         if (token != null && email != null) {
           await saveUserData(email, token);
         } else {
@@ -112,14 +113,30 @@ class ApiService {
 
   Future<List<dynamic>> getCollections() async {
     try {
-      // استخدام queryParameters بدلاً من data لإرسال معرف المستخدم
-      final response = await _dio.get('/collections', queryParameters: {'id': userId});
+      final token = await getToken();
 
+      if (token == null || token.isEmpty) {
+        throw Exception('User is not authenticated. Please log in.');
+      }
+
+      // Proceed with the request if authenticated
+      final response = await _dio.get(
+        '/collections',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+
+      // Check for success response
       if (response.statusCode == 200) {
         final data = response.data;
-        // print(data);
         return data['data'];
+      } else if (response.statusCode == 401) {
+        // Handle unauthorized access (invalid or expired token)
+        throw Exception(
+            'Unauthorized: Invalid or expired token. Please log in again.');
       } else {
+        // Handle other types of errors with status code and message
         throw Exception(
             'Failed to getCollections: ${response.statusCode} - ${response.data['message'] ?? 'Unknown error'}');
       }
@@ -128,28 +145,28 @@ class ApiService {
     }
   }
 
-
   // طريقة لإنشاء مجموعة جديدة
   Future<void> createCollection(String title, String? description,
       {bool isFav = true, int? tagId}) async {
     try {
+      final token = await getToken();
 
-      Future<String?> getUserId() async {
-        final prefs = await SharedPreferences.getInstance();
-        final userId = prefs.getString('userId');
-        if (userId == null) {
-          // Handle the case where userId is null, e.g., navigate to login or return a default value
-          return null;
-        }
-        return userId;
+      if (token == null || token.isEmpty) {
+        throw Exception('User is not authenticated. Please log in.');
       }
-      final response =  await _dio.post('/collections', data: {
-        'title': title,
-        'description': description,
-        'is_fav': isFav,
-        'tagId': tagId,
-        'user_id': userId,
-      });
+
+      final response = await _dio.post(
+        '/collections',
+        data: {
+          'title': title,
+          'description': description,
+          'is_fav': isFav,
+          'tagId': tagId
+        },
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = response.data;
@@ -169,9 +186,19 @@ class ApiService {
   // طريقة لجلب العناصر (Tabs) لمجموعة معينة
   Future<List<dynamic>> getTabs(int collectionId) async {
     try {
-      final response = await _dio.get('/tabs', queryParameters: {
-        'collection_id': collectionId,
-      });
+      final token = await getToken();
+
+      if (token == null || token.isEmpty) {
+        throw Exception('User is not authenticated. Please log in.');
+      }
+
+      final response = await _dio.get('/tabs',
+          queryParameters: {
+            'collection_id': collectionId,
+          },
+          options: Options(
+            headers: {'Authorization': 'Bearer $token'},
+          ));
       return response.data['data'];
     } catch (e) {
       throw Exception('Failed 1 to fetch tabs');
@@ -194,7 +221,16 @@ class ApiService {
   // طريقة لحذف عنصر
   Future<void> deleteTab(int tabId) async {
     try {
-      await _dio.delete('/tabs/$tabId');
+      final token = await getToken();
+
+      if (token == null || token.isEmpty) {
+        throw Exception('User is not authenticated. Please log in.');
+      }
+
+      await _dio.delete('/tabs/$tabId',
+          options: Options(
+            headers: {'Authorization': 'Bearer $token'},
+          ));
     } catch (e) {
       throw Exception('Failed to delete tab');
     }
@@ -203,7 +239,15 @@ class ApiService {
   // طريقة لجلب العلامات (Tags)
   Future<List<dynamic>> getTags() async {
     try {
-      final response = await _dio.get('/tags');
+      final token = await getToken();
+
+      if (token == null || token.isEmpty) {
+        throw Exception('User is not authenticated. Please log in.');
+      }
+      final response = await _dio.get('/tags',
+          options: Options(
+            headers: {'Authorization': 'Bearer $token'},
+          ));
       return response.data['data'];
     } catch (e) {
       throw Exception('Failed to fetch tags');
@@ -213,9 +257,18 @@ class ApiService {
   // طريقة لإنشاء علامة جديدة
   Future<void> createTag(String title) async {
     try {
-      await _dio.post('/tags', data: {
-        'title': title,
-      });
+      final token = await getToken();
+
+      if (token == null || token.isEmpty) {
+        throw Exception('User is not authenticated. Please log in.');
+      }
+      await _dio.post('/tags',
+          data: {
+            'title': title,
+          },
+          options: Options(
+            headers: {'Authorization': 'Bearer $token'},
+          ));
     } catch (e) {
       throw Exception('Failed to create tag');
     }
@@ -224,7 +277,15 @@ class ApiService {
   // طريقة لحذف علامة
   Future<void> deleteTag(int tagId) async {
     try {
-      await _dio.delete('/tags/$tagId');
+      final token = await getToken();
+
+      if (token == null || token.isEmpty) {
+        throw Exception('User is not authenticated. Please log in.');
+      }
+      await _dio.delete('/tags/$tagId',
+          options: Options(
+            headers: {'Authorization': 'Bearer $token'},
+          ));
     } catch (e) {
       throw Exception('Failed to delete tag');
     }

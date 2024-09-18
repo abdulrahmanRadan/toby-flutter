@@ -13,7 +13,7 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: const Text('Home '),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -75,7 +75,8 @@ class HomeScreen extends StatelessWidget {
                   title: Text(collection.title),
                   subtitle: Text(collection.description ?? ''),
                   onTap: () {
-                    Navigator.pushNamed(context, '/collectionDetails', arguments: collection);
+                    Navigator.pushNamed(context, '/collectionDetails',
+                        arguments: collection);
                   },
                 );
               },
@@ -116,7 +117,7 @@ class HomeScreen extends StatelessWidget {
               Navigator.pushNamed(context, '/profile');
               break;
             case 2:
-            // Navigate to settings
+              // Navigate to settings
               break;
           }
         },

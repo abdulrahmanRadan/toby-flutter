@@ -50,7 +50,6 @@ class LoginScreen extends StatelessWidget {
                 },
                 child: const Text('Register'),
               ),
-
             ],
           ),
         ),

@@ -25,8 +25,8 @@ class ApiService {
       if (response.statusCode == 200) {
         final data = response.data;
         final token = data['data']['access_token']?.toString();
-        final email =
-            data['data']['email']?.toString(); // Use email instead of id
+        final email = data['data']['email']?.toString(); // Use email instead of id
+        final userId = data['data']['id']?.toString();
 
         if (token != null && email != null) {
           await saveUserData(email, token);

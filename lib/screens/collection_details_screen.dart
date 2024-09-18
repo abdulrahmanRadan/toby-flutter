@@ -52,7 +52,7 @@ class CollectionDetailsScreen extends StatelessWidget {
                   ),
                   child: ListTile(
                     title: Text(tab.title),
-                    subtitle: Text(tab.url ?? ''),
+                    subtitle: Text(tab.url),
                     onTap: () {
                       // تنفيذ إجراء عند النقر على التبويب
                     },
@@ -79,7 +79,6 @@ class CollectionDetailsScreen extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Tab created successfully')),
             );
-
             // إعادة تحميل البيانات
             context.read<TabBloc>().add(LoadTabs(collection.id));
           }

@@ -25,7 +25,6 @@ class ApiService {
         'password': password,
       });
 
-      print("token: ");
       if (response.statusCode == 200) {
         final data = response.data;
         final token = data['data']['access_token']?.toString();
@@ -211,11 +210,21 @@ class ApiService {
   // طريقة لإنشاء عنصر جديد داخل مجموعة
   Future<void> createTab(String title, String url, int collectionId) async {
     try {
-      await _dio.post('/tabs', data: {
-        'title': title,
-        'url': url,
-        'collection_id': collectionId,
-      });
+      final token = await getToken();
+
+      if (token == null || token.isEmpty) {
+        throw Exception('User is not authenticated. Please log in.');
+      }
+
+      await _dio.post('/tabs',
+          data: {
+            'title': title,
+            'url': url,
+            'collection_id': collectionId,
+          },
+          options: Options(
+            headers: {'Authorization': 'Bearer $token'},
+          ));
     } catch (e) {
       throw Exception('Failed to create tab');
     }

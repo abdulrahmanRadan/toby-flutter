@@ -13,10 +13,6 @@ class ApiService {
     receiveTimeout: const Duration(seconds: 10),
   ));
 
-  final String? userId; // اجعل معرف المستخدم قابلاً لأن يكون null
-
-  ApiService(this.userId);
-
   // Method for user login
   Future<dynamic> login(String email, String password) async {
     try {
@@ -28,14 +24,14 @@ class ApiService {
       if (response.statusCode == 200) {
         final data = response.data;
         final token = data['data']['access_token']?.toString();
-        final email = data['data']['email']?.toString(); // Use email instead of id
-        final userId = data['data']['id']?.toString();
+        final email =
+            data['data']['email']?.toString(); // Use email instead of id
 
         if (token != null && email != null) {
           await saveUserData(email, token);
         } else {
           throw Exception(
-              'Login response is missing userId or token: ${data['data']['email']} : $token');
+              'Login response is missing, email or token: ${data['data']['email']} : $token');
         }
         return data;
       } else {
@@ -75,7 +71,7 @@ class ApiService {
           await saveUserData(email, token);
         } else {
           throw Exception(
-              'Login response is missing userId or token: ${data['data']['email']} : $token');
+              'Login response is missing, email or token: ${data['data']['email']} : $token');
         }
         return data;
       } else {
@@ -95,16 +91,16 @@ class ApiService {
   }
 
   // Save user data to SharedPreferences
-  Future<void> saveUserData(String userId, String token) async {
+  Future<void> saveUserData(String email, String token) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('userId', userId);
+    await prefs.setString('email', email);
     await prefs.setString('token', token);
   }
 
   // Retrieve user ID dynamically
-  Future<String?> getUserId() async {
+  Future<String?> getUserEmail() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('userId');
+    return prefs.getString('email');
   }
 
   // Retrieve token dynamically

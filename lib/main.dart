@@ -12,7 +12,6 @@ import 'package:toby1/screens/home_screen.dart';
 import 'package:toby1/screens/login_screen.dart';
 import 'package:toby1/screens/registration_screen.dart';
 import 'package:toby1/screens/setting_screen.dart';
-import 'package:toby1/screens/tab_management_screen.dart';
 import 'package:toby1/screens/tag_management_screen.dart';
 import 'package:toby1/screens/user_profile_screen.dart';
 import 'package:toby1/blocs/auth_bloc.dart';
@@ -88,7 +87,7 @@ class MyApp extends StatelessWidget {
               initialRoute: userEmail == null ? '/' : '/home',
               routes: {
                 '/': (context) => LoginScreen(),
-                '/home': (context) => HomeScreen(),
+                '/home': (context) =>  HomeScreen(),
                 '/createCollection': (context) => CreateCollectionScreen(),
                 '/collectionDetails': (context) {
                   final collection =

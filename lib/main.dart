@@ -27,20 +27,20 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  Future<String?> getUserId() async {
+  Future<String?> getUserEmail() async {
     final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('userId');
-    if (userId == null) {
-      // Handle the case where userId is null, e.g., navigate to login or return a default value
+    final userEmail = prefs.getString('email');
+    if (userEmail == null) {
+      // Handle the case where userEmail is null, e.g., navigate to login or return a default value
       return null;
     }
-    return userId;
+    return userEmail;
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<String?>(
-      future: getUserId(),
+      future: getUserEmail(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const MaterialApp(
@@ -58,11 +58,11 @@ class MyApp extends StatelessWidget {
           );
         }
 
-        final userId = snapshot.data;
+        final userEmail = snapshot.data;
 
         return MultiRepositoryProvider(
           providers: [
-            RepositoryProvider(create: (context) => ApiService(userId)),
+            RepositoryProvider(create: (context) => ApiService()),
             RepositoryProvider(
                 create: (context) =>
                     CollectionRepository(context.read<ApiService>())),
@@ -85,7 +85,7 @@ class MyApp extends StatelessWidget {
             ],
             child: MaterialApp(
               title: 'Toby App',
-              initialRoute: userId == null ? '/' : '/home',
+              initialRoute: userEmail == null ? '/' : '/home',
               routes: {
                 '/': (context) => LoginScreen(),
                 '/home': (context) => HomeScreen(),

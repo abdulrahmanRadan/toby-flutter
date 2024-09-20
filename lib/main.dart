@@ -3,9 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toby1/blocs/collection_bloc.dart';
 import 'package:toby1/blocs/registration_bloc.dart';
+import 'package:toby1/blocs/tag_bloc.dart';
 import 'package:toby1/repositories/api_service.dart';
 import 'package:toby1/repositories/collection_repository.dart';
 import 'package:toby1/repositories/tab_repository.dart';
+import 'package:toby1/repositories/tag_repository.dart';
 import 'package:toby1/screens/collection_details_screen.dart';
 import 'package:toby1/screens/create_collection_screen.dart';
 import 'package:toby1/screens/home_screen.dart';
@@ -68,6 +70,8 @@ class MyApp extends StatelessWidget {
                     CollectionRepository(context.read<ApiService>())),
             RepositoryProvider(
                 create: (context) => TabRepository(context.read<ApiService>())),
+            RepositoryProvider(
+                create: (context) => TagRepository(context.read<ApiService>()))
           ],
           child: MultiBlocProvider(
             providers: [
@@ -82,6 +86,8 @@ class MyApp extends StatelessWidget {
               BlocProvider(
                   create: (context) => TabBloc(
                       context.read<TabRepository>())), // Provide TabBloc here
+              BlocProvider(
+                  create: (context) => TagBloc(context.read<TagRepository>())),
             ],
             child: MaterialApp(
               title: 'Toby App',

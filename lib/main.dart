@@ -10,17 +10,19 @@ import 'package:toby1/repositories/tab_repository.dart';
 import 'package:toby1/repositories/tag_repository.dart';
 import 'package:toby1/screens/collection_details_screen.dart';
 import 'package:toby1/screens/create_collection_screen.dart';
+import 'package:toby1/screens/edit_tab_screen.dart';
 import 'package:toby1/screens/home_screen.dart';
 import 'package:toby1/screens/login_screen.dart';
 import 'package:toby1/screens/registration_screen.dart';
 import 'package:toby1/screens/setting_screen.dart';
-import 'package:toby1/screens/tab_management_screen.dart';
 import 'package:toby1/screens/tag_management_screen.dart';
 import 'package:toby1/screens/user_profile_screen.dart';
 import 'package:toby1/blocs/auth_bloc.dart';
 import 'package:toby1/models/collection_model.dart';
 import 'package:toby1/blocs/tab_bloc.dart'; // Import TabBloc here
 import 'package:toby1/screens/CreateTabScreen.dart';
+
+import 'models/tab_model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -94,7 +96,7 @@ class MyApp extends StatelessWidget {
               initialRoute: userEmail == null ? '/' : '/home',
               routes: {
                 '/': (context) => LoginScreen(),
-                '/home': (context) => HomeScreen(),
+                '/home': (context) =>  const HomeScreen(),
                 '/createCollection': (context) => CreateCollectionScreen(),
                 '/collectionDetails': (context) {
                   final collection =
@@ -113,6 +115,13 @@ class MyApp extends StatelessWidget {
                         body: Center(child: Text('No collection ID provided')));
                   }
                   return CreateTabScreen(collectionId: collectionId);
+                },
+                '/editTab': (context) {
+                  final tab = ModalRoute.of(context)?.settings.arguments as AppTab?;
+                  if (tab == null) {
+                    return const Scaffold(body: Center(child: Text('No tab data provided')));
+                  }
+                  return EditTabScreen(tab: tab);
                 },
                 '/manageTags': (context) => const TagManagementScreen(),
                 '/profile': (context) => UserProfileScreen(),

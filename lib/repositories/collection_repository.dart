@@ -42,4 +42,5 @@ class CollectionRepository {
       throw Exception('failed to create collection $e');
     }
   }
+
 }

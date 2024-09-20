@@ -226,6 +226,27 @@ class ApiService {
     }
   }
 
+  Future<Response> updateTab(int id, String title, String url, int collectionId) async {
+    try {
+      final token = await getToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('User is not authenticated. Please log in.');
+      }
+      final response = await _dio.put('/tabs/$id',
+          data: {'title': title, 'url': url, 'collection_id': collectionId}, // إضافة collection_id
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return response;
+      } else {
+        throw Exception(
+            'Failed to update tab: ${response.statusCode} - ${response.data['message'] ?? 'Unknown error'}');
+      }
+    } catch (e) {
+      throw Exception('Failed to update tab API');
+    }
+  }
+
   // طريقة لحذف عنصر
   Future<void> deleteTab(int tabId) async {
     try {

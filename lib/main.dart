@@ -96,7 +96,7 @@ class MyApp extends StatelessWidget {
               initialRoute: userEmail == null ? '/' : '/home',
               routes: {
                 '/': (context) => LoginScreen(),
-                '/home': (context) =>  const HomeScreen(),
+                '/home': (context) => const HomeScreen(),
                 '/createCollection': (context) => CreateCollectionScreen(),
                 '/collectionDetails': (context) {
                   final collection =
@@ -117,9 +117,11 @@ class MyApp extends StatelessWidget {
                   return CreateTabScreen(collectionId: collectionId);
                 },
                 '/editTab': (context) {
-                  final tab = ModalRoute.of(context)?.settings.arguments as AppTab?;
+                  final tab =
+                      ModalRoute.of(context)?.settings.arguments as AppTab?;
                   if (tab == null) {
-                    return const Scaffold(body: Center(child: Text('No tab data provided')));
+                    return const Scaffold(
+                        body: Center(child: Text('No tab data provided')));
                   }
                   return EditTabScreen(tab: tab);
                 },

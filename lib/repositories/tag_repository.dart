@@ -9,6 +9,7 @@ class TagRepository {
   // Fetch all tags
   Future<List<Tag>> getTags() async {
     try {
+      // print('tag pesponsitory');
       final response = await apiService.getTags();
       return response.map<Tag>((json) => Tag.fromJson(json)).toList();
     } catch (e) {
@@ -31,6 +32,11 @@ class TagRepository {
     } catch (e) {
       throw Exception('Failed to delete tag');
     }
+  }
+
+  Future<List<Tag>> getConnectedTags(int collectionId) async {
+    final response = await apiService.getConnectedTags(collectionId);
+    return response.map<Tag>((tagData) => Tag.fromJson(tagData)).toList();
   }
 
   // Update a tag

@@ -1,7 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:toby1/blocs/states/collection_state.dart';
 import 'package:toby1/models/collection_model.dart';
 import 'package:toby1/repositories/collection_repository.dart';
+
+
 
 // Define Collection States
 abstract class CollectionState extends Equatable {
@@ -48,6 +51,16 @@ class CreateCollection extends CollectionEvent {
   const CreateCollection(this.title, this.description);
 }
 
+
+class CollectionShow extends CollectionEvent {
+  final int collectionId;
+
+  const CollectionShow(this.collectionId);
+
+  @override
+  List<Object?> get props => [collectionId];
+}
+
 // BLoC for Collection Management
 class CollectionBloc extends Bloc<CollectionEvent, CollectionState> {
   final CollectionRepository collectionRepository;
@@ -59,10 +72,25 @@ class CollectionBloc extends Bloc<CollectionEvent, CollectionState> {
         final collections = await collectionRepository.getCollections();
         emit(CollectionLoaded(collections));
       } catch (e) {
-        print(e.toString());
+        // print(e.toString());
         emit(CollectionError('Failed to load collections: ${e.toString()}'));
       }
     });
+
+    on<CollectionShow>((event, emit) async {
+      emit(CollectionLoading()); // وضع التطبيق في حالة تحميل البيانات
+      try {
+        final collection = await collectionRepository.fetchCollection(event.collectionId); // الحصول على البيانات
+        emit(SingleCollectionLoaded(  // استخدام الحالة الجديدة
+          collection: collection,
+          tabs: collection.tabs,  // استخدام التبويبات من النموذج
+          tags: collection.tags,  // استخدام العلامات من النموذج
+        ));
+      } catch (e) {
+        emit(CollectionError('Failed to fetch collection: ${e.toString()}'));  // حالة فشل في حالة حدوث خطأ
+      }
+    });
+
 
     on<CreateCollection>((event, emit) async {
       emit(CollectionLoading());

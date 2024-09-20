@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toby1/models/collection_model.dart';
 
 // TODO: check all requests's body for any mistakes
 // TODO: Create a API call for getById to all the other methods
@@ -219,6 +220,31 @@ class ApiService {
     }
   }
 
+
+  Future<Collection> fetchCollection(int collectionId) async {
+    try {
+      final token = await getToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('User is not authenticated. Please log in.');
+      }
+
+      final response = await _dio.get(
+        '/collections/$collectionId',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return Collection.fromJson(response.data); // تحويل الاستجابة إلى نموذج Collection
+      } else {
+        throw Exception(
+            'Failed to fetch collection: ${response.statusCode} - ${response.data['message'] ?? 'Unknown error'}'
+        );
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch collection API: ${e.toString()}');
+    }
+  }
+
   Future<void> deleteCollection(int collectionId) async {
     try {
       final token = await getToken();
@@ -269,6 +295,7 @@ class ApiService {
       throw Exception('Failed 1 to fetch tabs');
     }
   }
+
 
   // طريقة لإنشاء عنصر جديد داخل مجموعة
   Future<void> createTab(String title, String url, int collectionId) async {
@@ -345,6 +372,7 @@ class ApiService {
       if (token == null || token.isEmpty) {
         throw Exception('User is not authenticated. Please log in.');
       }
+      // print(token);
       final response = await _dio.get('/tags',
           options: Options(
             headers: {'Authorization': 'Bearer $token'},
@@ -352,6 +380,24 @@ class ApiService {
       return response.data['data'];
     } catch (e) {
       throw Exception('Failed to fetch tags');
+    }
+  }
+  Future<List<dynamic>> getConnectedTags(int collectionId) async {
+    try {
+      final token = await getToken();
+
+      if (token == null || token.isEmpty) {
+        throw Exception('User is not authenticated. Please log in.');
+      }
+
+      final response = await _dio.get('/collections/$collectionId/tags',
+          options: Options(
+            headers: {'Authorization': 'Bearer $token'},
+          ));
+
+      return response.data['data'];
+    } catch (e) {
+      throw Exception('Failed to fetch connected tags');
     }
   }
 

@@ -40,6 +40,15 @@ class CollectionRepository {
       throw Exception('failed to create collection $e');
     }
   }
+  // دالة لجلب collection باستخدام id
+  Future<Collection> fetchCollection(int collectionId) async {
+    try {
+      final collection = await apiService.fetchCollection(collectionId);
+      return collection; // إرجاع نموذج Collection
+    } catch (e) {
+      throw Exception('Failed to fetch collection: ${e.toString()}');
+    }
+  }
 
   Future<void> updateCollection(
       int collectionId, String title, String? description, bool? isFav) async {

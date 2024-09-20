@@ -64,6 +64,11 @@ class UpdateTag extends TagEvent {
 
   const UpdateTag(this.tagId, this.newTitle);
 }
+class GetConnectedTags extends TagEvent {
+  final int collectionId;
+
+  const GetConnectedTags(this.collectionId);
+}
 
 class AddTagToCollection extends TagEvent {
   final int collectionId;
@@ -71,6 +76,7 @@ class AddTagToCollection extends TagEvent {
 
   const AddTagToCollection(this.collectionId, this.tagId);
 }
+
 
 class RemoveTagFromCollection extends TagEvent {
   final int collectionId;
@@ -88,6 +94,7 @@ class TagBloc extends Bloc<TagEvent, TagState> {
     on<LoadTags>((event, emit) async {
       emit(TagLoading());
       try {
+        // print('bloc');
         final tags = await tagRepository.getTags();
         emit(TagLoaded(tags));
       } catch (e) {
@@ -126,6 +133,17 @@ class TagBloc extends Bloc<TagEvent, TagState> {
         add(LoadTags()); // Reload tags after update
       } catch (e) {
         emit(const TagError('Failed to update tag.'));
+      }
+    });
+
+    // Get Connected Tags
+    on<GetConnectedTags>((event, emit) async {
+      emit(TagLoading());
+      try {
+        final connectedTags = await tagRepository.getConnectedTags(event.collectionId);
+        emit(TagLoaded(connectedTags)); // Assuming you have a TagLoaded state to hold the tags
+      } catch (e) {
+        emit(const TagError('Failed to retrieve connected tags.'));
       }
     });
 

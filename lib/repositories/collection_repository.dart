@@ -27,8 +27,6 @@ class CollectionRepository {
           throw Exception('Error: $e');
         }
       }
-      // Add a return statement here
-      return [];
     }
   }
 
@@ -43,4 +41,23 @@ class CollectionRepository {
     }
   }
 
+  Future<void> updateCollection(
+      int collectionId, String title, String? description, bool? isFav) async {
+    try {
+      final response = await apiService.updateCollection(
+          collectionId, title, description, isFav);
+      return response;
+    } catch (e) {
+      throw Exception('failed to create collection $e');
+    }
+  }
+
+  Future<void> deleteCollection(int collectionId) async {
+    try {
+      final response = await apiService.deleteCollection(collectionId);
+      return response;
+    } catch (e) {
+      throw Exception('failed to delete collection $e');
+    }
+  }
 }

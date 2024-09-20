@@ -181,6 +181,73 @@ class ApiService {
     }
   }
 
+  // TODO: هل لازم نطرح هنا
+  // tag_id?
+  Future<void> updateCollection(
+      int collectionId, String title, String? description, bool? isFav) async {
+    try {
+      final token = await getToken();
+
+      if (token == null || token.isEmpty) {
+        throw Exception('User is not authenticated. Please log in.');
+      }
+
+      final response = await _dio.put(
+        '/collections/$collectionId',
+        data: {
+          'title': title,
+          'description': description,
+          'is_fav': isFav,
+        },
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        return data;
+      } else {
+        throw Exception(
+            'Failed to update collection: ${response.statusCode} - ${response.data['message'] ?? 'Unknown error'}');
+      }
+    } catch (e) {
+      if (e is DioException && e.response != null) {
+        throw Exception('Error Response: ${e.response!.data}');
+      }
+      throw Exception('Failed to update collection: $e');
+    }
+  }
+
+  Future<void> deleteCollection(int collectionId) async {
+    try {
+      final token = await getToken();
+
+      if (token == null || token.isEmpty) {
+        throw Exception('User is not authenticated. Please log in.');
+      }
+
+      final response = await _dio.delete(
+        '/collections/$collectionId',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return; // Success, no need to return data on delete
+      } else {
+        throw Exception(
+            'Failed to delete collection: ${response.statusCode} - ${response.data['message'] ?? 'Unknown error'}');
+      }
+    } catch (e) {
+      if (e is DioException && e.response != null) {
+        throw Exception('Error Response: ${e.response!.data}');
+      }
+      throw Exception('Failed to delete collection: $e');
+    }
+  }
+
   // طريقة لجلب العناصر (Tabs) لمجموعة معينة
   Future<List<dynamic>> getTabs(int collectionId) async {
     try {
@@ -226,14 +293,19 @@ class ApiService {
     }
   }
 
-  Future<Response> updateTab(int id, String title, String url, int collectionId) async {
+  Future<Response> updateTab(
+      int id, String title, String url, int collectionId) async {
     try {
       final token = await getToken();
       if (token == null || token.isEmpty) {
         throw Exception('User is not authenticated. Please log in.');
       }
       final response = await _dio.put('/tabs/$id',
-          data: {'title': title, 'url': url, 'collection_id': collectionId}, // إضافة collection_id
+          data: {
+            'title': title,
+            'url': url,
+            'collection_id': collectionId
+          }, // إضافة collection_id
           options: Options(headers: {'Authorization': 'Bearer $token'}));
 
       if (response.statusCode == 200 || response.statusCode == 201) {

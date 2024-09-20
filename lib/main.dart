@@ -3,9 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toby1/blocs/collection_bloc.dart';
 import 'package:toby1/blocs/registration_bloc.dart';
+import 'package:toby1/blocs/tag_bloc.dart';
 import 'package:toby1/repositories/api_service.dart';
 import 'package:toby1/repositories/collection_repository.dart';
 import 'package:toby1/repositories/tab_repository.dart';
+import 'package:toby1/repositories/tag_repository.dart';
 import 'package:toby1/screens/collection_details_screen.dart';
 import 'package:toby1/screens/create_collection_screen.dart';
 import 'package:toby1/screens/edit_tab_screen.dart';
@@ -70,6 +72,8 @@ class MyApp extends StatelessWidget {
                     CollectionRepository(context.read<ApiService>())),
             RepositoryProvider(
                 create: (context) => TabRepository(context.read<ApiService>())),
+            RepositoryProvider(
+                create: (context) => TagRepository(context.read<ApiService>()))
           ],
           child: MultiBlocProvider(
             providers: [
@@ -84,13 +88,15 @@ class MyApp extends StatelessWidget {
               BlocProvider(
                   create: (context) => TabBloc(
                       context.read<TabRepository>())), // Provide TabBloc here
+              BlocProvider(
+                  create: (context) => TagBloc(context.read<TagRepository>())),
             ],
             child: MaterialApp(
               title: 'Toby App',
               initialRoute: userEmail == null ? '/' : '/home',
               routes: {
                 '/': (context) => LoginScreen(),
-                '/home': (context) =>  const HomeScreen(),
+                '/home': (context) => const HomeScreen(),
                 '/createCollection': (context) => CreateCollectionScreen(),
                 '/collectionDetails': (context) {
                   final collection =
@@ -111,9 +117,11 @@ class MyApp extends StatelessWidget {
                   return CreateTabScreen(collectionId: collectionId);
                 },
                 '/editTab': (context) {
-                  final tab = ModalRoute.of(context)?.settings.arguments as AppTab?;
+                  final tab =
+                      ModalRoute.of(context)?.settings.arguments as AppTab?;
                   if (tab == null) {
-                    return const Scaffold(body: Center(child: Text('No tab data provided')));
+                    return const Scaffold(
+                        body: Center(child: Text('No tab data provided')));
                   }
                   return EditTabScreen(tab: tab);
                 },

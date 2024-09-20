@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:toby1/models/tab_model.dart';
 import 'package:toby1/repositories/tab_repository.dart';
 
+import 'events/tab_event.dart';
+
 
 
 // Define Tab States
@@ -60,6 +62,14 @@ class DeleteTab extends TabEvent {
 
   const DeleteTab(this.tabId);
 }
+class TabUpdatedSuccess extends TabState {
+  final String message;
+
+  const TabUpdatedSuccess(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
 
 // BLoC for Tab Management
 class TabBloc extends Bloc<TabEvent, TabState> {
@@ -96,15 +106,14 @@ class TabBloc extends Bloc<TabEvent, TabState> {
         emit(const TabError('Failed to delete tab.'));
       }
     });
-    // on<DeleteTab>((event, emit) async {
-    //   emit(TabLoading());
-    //   try {
-    //     await tabRepository.deleteTab(event.tabId);
-    //     // إعادة تحميل التبويبات بعد الحذف
-    //     add(LoadTabs(collectionId)); // تأكد من أن collectionId متاح هنا
-    //   } catch (e) {
-    //     emit(const TabError('Failed to delete tab.'));
-    //   }
-    // });
+
+    on<UpdateTab>((event, emit) async {
+      try {
+        await tabRepository.updateTab(event.id, event.title, event.url, event.collectionId);
+        emit(const TabUpdatedSuccess('Tab updated successfully')); // إطلاق حالة النجاح
+      } catch (e) {
+        emit(const TabError('Failed to update tab.'));
+      }
+    });
   }
 }

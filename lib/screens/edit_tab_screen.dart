@@ -1,11 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:toby1/blocs/events/tab_event.dart';
 import 'package:toby1/models/tab_model.dart';
 
 import '../blocs/tab_bloc.dart';
-import '../models/tab_model.dart';
+
 
 class EditTabScreen extends StatefulWidget {
   final AppTab tab;

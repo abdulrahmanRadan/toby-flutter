@@ -51,6 +51,7 @@ class TagRepository {
   // Add a tag to a collection
   Future<void> addTagToCollection(int collectionId, int tagId) async {
     try {
+      // print(tagId);
       await apiService.addTagToCollection(collectionId, tagId);
     } catch (e) {
       throw Exception('Failed to add tag to collection');

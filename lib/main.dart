@@ -19,7 +19,7 @@ import 'package:toby1/screens/tag_management_screen.dart';
 import 'package:toby1/screens/user_profile_screen.dart';
 import 'package:toby1/blocs/auth_bloc.dart';
 import 'package:toby1/models/collection_model.dart';
-import 'package:toby1/blocs/tab_bloc.dart'; // Import TabBloc here
+import 'package:toby1/blocs/tab_bloc.dart';
 import 'package:toby1/screens/CreateTabScreen.dart';
 
 import 'models/tab_model.dart';
@@ -30,6 +30,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
 
   Future<String?> getUserEmail() async {
     final prefs = await SharedPreferences.getInstance();
@@ -92,6 +93,7 @@ class MyApp extends StatelessWidget {
                   create: (context) => TagBloc(context.read<TagRepository>())),
             ],
             child: MaterialApp(
+              debugShowCheckedModeBanner: false,
               title: 'Toby App',
               initialRoute: userEmail == null ? '/' : '/home',
               routes: {

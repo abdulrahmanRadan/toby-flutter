@@ -26,10 +26,11 @@ class ApiService {
         final data = response.data;
         final token = data['data']['access_token']?.toString();
         final email =
-            data['data']['email']?.toString(); // Use email instead of id
+            data['data']['email']?.toString();
+        final name = data['data']['name']?.toString();
 
         if (token != null && email != null) {
-          await saveUserData(email, token);
+          await saveUserData(email, token, name!);
         } else {
           throw Exception(
               'Login response is missing, email or token: ${data['data']['email']} : $token');
@@ -67,9 +68,10 @@ class ApiService {
         final token =
             data['data']['access_token']?.toString(); // Add null check here
         final email = data['data']['email']?.toString();
+        final name = data['data']['name']?.toString();
 
         if (token != null && email != null) {
-          await saveUserData(email, token);
+          await saveUserData(email, token, name!);
         } else {
           throw Exception(
               'Login response is missing, email or token: ${data['data']['email']} : $token');
@@ -92,10 +94,11 @@ class ApiService {
   }
 
   // Save user data to SharedPreferences
-  Future<void> saveUserData(String email, String token) async {
+  Future<void> saveUserData(String email, String token, String name) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('email', email);
     await prefs.setString('token', token);
+    await prefs.setString('name', name);
   }
 
   // Retrieve user ID dynamically
@@ -103,6 +106,8 @@ class ApiService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('email');
   }
+
+
 
   // Retrieve token dynamically
   Future<String?> getToken() async {
@@ -470,13 +475,14 @@ class ApiService {
         throw Exception('User is not authenticated. Please log in.');
       }
 
-      await _dio.post(
+      final respons =  _dio.post(
         '/collections/$collectionId/tags',
         data: {'tag_id': tagId},
         options: Options(
           headers: {'Authorization': 'Bearer $token'},
         ),
       );
+      // print(respons);
     } catch (e) {
       throw Exception('Failed to add tag to collection');
     }

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:toby1/blocs/tag_bloc.dart';
 import 'package:toby1/blocs/tab_bloc.dart';
 import 'package:toby1/models/collection_model.dart';
-import 'package:toby1/models/tag_model.dart'; // تأكد من استيراد نموذج Tag
+import 'package:toby1/models/tag_model.dart';
 
 class CollectionDetailsScreen extends StatefulWidget {
   final Collection collection;
@@ -23,16 +23,17 @@ class _CollectionDetailsScreenState extends State<CollectionDetailsScreen> {
   void initState() {
     super.initState();
     _pageController = PageController();
+    context.read<TagBloc>().add(GetConnectedTags(widget.collection.id));
     context.read<TagBloc>().add(LoadTags());
     context.read<TabBloc>().add(LoadTabs(widget.collection.id));
 
+
     // _loadConnectedTags();
   }
-  void _loadConnectedTags() {
-    // من المفترض أن تكون لديك دالة لتحميل الـ Tags المتصلة
-    // هذا مجرد مثال؛ ستحتاج إلى تعديل ذلك حسب حالتك
-    // يمكنك استدعاء Bloc أو أي طريقة لتحميلها
-  }
+  // void _loadConnectedTags() {
+  //
+  //
+  // }
 
   @override
   void dispose() {
@@ -74,6 +75,7 @@ class _CollectionDetailsScreenState extends State<CollectionDetailsScreen> {
         context.read<TagBloc>().add(AddTagToCollection(widget.collection.id, tag.id));
       }
     });
+    context.read<TagBloc>().add(LoadTags());
   }
 
   @override

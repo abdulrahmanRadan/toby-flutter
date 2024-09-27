@@ -1,10 +1,10 @@
-# Flutter Project
+# Toby Flutter Project
 
-Welcome to your Flutter project!
+Welcome to the **Toby** Flutter project!
 
 ## Introduction
 
-This project is a Flutter application that [provide a brief description of the app]. The app aims to [app goals] and offers [key features].
+This project is a Flutter application called **Toby**. The app aims to provide users with an easy and intuitive way to manage collections, tags, and media. Key features include the ability to add, edit, and delete collections, manage tags, and view related media.
 
 ## Requirements
 
@@ -39,7 +39,7 @@ To run the app, use the following command:
 flutter run
 ```
 
-You can also run the app on an emulator or a physical device using Android Studio or VS Code.
+You can also run the app on an emulator or a physical device using Android Studio, VS Code, or directly through the terminal.
 
 ## Building
 
@@ -54,6 +54,15 @@ or for iOS:
 ```bash
 flutter build ios
 ```
+
+## Project Structure
+
+The **Toby** app follows a modular structure:
+- `lib/`: Contains the main application code.
+- `lib/screens/`: Screens that make up the UI.
+- `lib/models/`: Data models for the app.
+- `lib/services/`: Services for API calls and data handling.
+- `lib/blocs/`: Business logic components (BLoC) for managing state.
 
 ## Contributing
 
